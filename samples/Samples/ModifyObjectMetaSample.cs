@@ -7,25 +7,39 @@
 
 using System;
 using Aliyun.OSS.Common;
+using System.Text;
+using System.IO;
 
 namespace Aliyun.OSS.Samples
 {
     /// <summary>
-    /// Sample for determining whether the specified bucket exists.
+    /// Sample for modify object meta
     /// </summary>
-    public static class DoesBucketExistSample
+    public static class ModifyObjectMetaSample
     {
         static string accessKeyId = Config.AccessKeyId;
         static string accessKeySecret = Config.AccessKeySecret;
         static string endpoint = Config.Endpoint;
         static OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
 
-        public static void DoesBucketExist(string bucketName)
+        public static void ModifyObjectMeta(string bucketName)
         {
+            const string key = "key1";
             try
             {
-                var exist = client.DoesBucketExist(bucketName);
-                Console.WriteLine("exist ? " + exist);
+                byte[] binaryData = Encoding.ASCII.GetBytes("forked from aliyun/aliyun-oss-csharp-sdk "); 
+                var stream = new MemoryStream(binaryData);
+
+                client.PutObject(bucketName, key, stream);
+
+                var meta = new ObjectMetadata()
+                {
+                    ContentType = "application/msword"
+                };
+
+                client.ModifyObjectMeta(bucketName, key, meta);
+
+                Console.WriteLine("Modify object meta succeeded");
             }
             catch (OssException ex)
             {
