@@ -220,7 +220,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         }
 
         [Test]
-        public void ResumableCopyObjectTestWithFileLengthLessThanPartSize() 
+        public void CopyBigObjectTestWithFileLengthLessThanPartSize() 
         {
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
             try
@@ -230,7 +230,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
 
                 var sourceObjectMeta = _ossClient.GetObjectMetadata(_bucketName, _sourceBigObjectKey);
 
-                _ossClient.ResumableCopyObject(copyRequest, null, sourceObjectMeta.ContentLength + 1);
+                _ossClient.CopyBigObject(copyRequest, sourceObjectMeta.ContentLength + 1);
                 Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
 
                 var targetObjectMeta = _ossClient.GetObjectMetadata(_bucketName, targetObjectKey);
@@ -243,7 +243,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         }
 
         [Test]
-        public void ResumableCopyObjectTestWithFileLengthEqualPartSize() 
+        public void CopyBigObjectTestWithFileLengthEqualPartSize() 
         {
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
             try
@@ -253,7 +253,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
 
                 var sourceObjectMeta = _ossClient.GetObjectMetadata(_bucketName, _sourceBigObjectKey);
 
-                _ossClient.ResumableCopyObject(copyRequest, null, sourceObjectMeta.ContentLength);
+                _ossClient.CopyBigObject(copyRequest, sourceObjectMeta.ContentLength);
                 Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
 
                 var targetObjectMeta = _ossClient.GetObjectMetadata(_bucketName, targetObjectKey);
@@ -266,7 +266,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         }
 
         [Test]
-        public void ResumableCopyObjectTestWithFileLengthMoreThanPartSize()
+        public void CopyBigObjectTestWithFileLengthMoreThanPartSize()
         {
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
             try
@@ -276,7 +276,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
 
                 var sourceObjectMeta = _ossClient.GetObjectMetadata(_bucketName, _sourceBigObjectKey);
 
-                _ossClient.ResumableCopyObject(copyRequest, null, sourceObjectMeta.ContentLength - 10);
+                _ossClient.CopyBigObject(copyRequest, sourceObjectMeta.ContentLength - 10);
                 Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
 
                 var targetObjectMeta = _ossClient.GetObjectMetadata(_bucketName, targetObjectKey);
@@ -289,7 +289,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         }
 
         [Test]
-        public void ResumableCopyObjectTestWithDefaultPartSize()
+        public void CopyBigObjectTestWithDefaultPartSize()
         {
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
             try
@@ -299,30 +299,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
 
                 var sourceObjectMeta = _ossClient.GetObjectMetadata(_bucketName, _sourceBigObjectKey);
 
-                _ossClient.ResumableCopyObject(copyRequest, null);
-                Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
-
-                var targetObjectMeta = _ossClient.GetObjectMetadata(_bucketName, targetObjectKey);
-                Assert.AreEqual(sourceObjectMeta.ContentLength, targetObjectMeta.ContentLength);
-            }
-            finally
-            {
-                _ossClient.DeleteObject(_bucketName, targetObjectKey);
-            }
-        }
-
-        [Test]
-        public void ResumableCopyObjectTest()
-        { 
-            var targetObjectKey = OssTestUtils.GetObjectKey(_className);
-            try
-            {
-                var copyRequest = new CopyObjectRequest(_bucketName, _sourceBigObjectKey, _bucketName, targetObjectKey);
-
-                var sourceObjectMeta = _ossClient.GetObjectMetadata(_bucketName, _sourceBigObjectKey);
-
-                _ossClient.ResumableCopyObject(copyRequest, Config.DownloadFolder);
-
+                _ossClient.CopyBigObject(copyRequest);
                 Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
 
                 var targetObjectMeta = _ossClient.GetObjectMetadata(_bucketName, targetObjectKey);

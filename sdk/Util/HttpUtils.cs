@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Web;
 using System;
 
 namespace Aliyun.OSS.Util
@@ -86,12 +87,7 @@ namespace Aliyun.OSS.Util
 
         public static string DecodeUri(string uriToDecode)
         {
-            if (!string.IsNullOrEmpty(uriToDecode))
-            {
-                uriToDecode = uriToDecode.Replace("+", " ");
-                return Uri.UnescapeDataString(uriToDecode);
-            }
-            return string.Empty;
+            return HttpUtility.UrlDecode(uriToDecode);
         }
 
         public static string Reencode(string data, string fromCharset, string toCharset)

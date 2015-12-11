@@ -157,6 +157,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
                         var multipartListing = _ossClient.ListMultipartUploads(new ListMultipartUploadsRequest(_bucketName));
                         foreach (var upload in multipartListing.MultipartUploads)
                         {
+                            Console.WriteLine(upload.ToString());
                             Assert.AreEqual(newKey, upload.Key);
                         }
                     }

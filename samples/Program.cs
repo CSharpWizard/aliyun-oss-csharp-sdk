@@ -5,10 +5,6 @@ namespace Aliyun.OSS.Samples
 {
     public class Program
     {
-        /// <summary>
-        /// SDK的示例程序
-        /// </summary>
-        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             Console.WriteLine("Aliyun SDK for .NET Samples!");
@@ -19,11 +15,11 @@ namespace Aliyun.OSS.Samples
             {
                 CreateBucketSample.CreateBucket(bucketName);
 
-                //ListBucketsSample.ListBuckets();
+                // ListBucketsSample.ListBuckets();
 
-                //SetBucketCorsSample.SetBucketCors(bucketName);
+                // SetBucketCorsSample.SetBucketCors(bucketName);
 
-                //GetBucketCorsSample.GetBucketCors(bucketName);
+                // GetBucketCorsSample.GetBucketCors(bucketName);
 
                 //DeleteBucketCorsSample.DeleteBucketCors(bucketName);
 
@@ -55,8 +51,6 @@ namespace Aliyun.OSS.Samples
 
                 //PutObjectSample.PutObject(bucketName);
 
-                //ResumbaleSample.ResumablePutObject(bucketName);
-
                 //CreateEmptyFolderSample.CreateEmptyFolder(bucketName);
 
                 //AppendObjectSample.AppendObject(bucketName);
@@ -72,13 +66,11 @@ namespace Aliyun.OSS.Samples
                 //DeleteObjectsSample.DeleteObjects(bucketName);
 
                 //const string sourceBucket = bucketName;
-                //const string sourceKey = "ResumablePutObject";
+                //const string sourceKey = "GetObjectSample";
                 //const string targetBucket = bucketName;
-                //const string targetKey = "ResumablePutObject2";
+                //const string targetKey = "GetObjectSample2";
                 //CopyObjectSample.CopyObject(sourceBucket, sourceKey, targetBucket, targetKey);
                 //CopyObjectSample.AsyncCopyObject(sourceBucket, sourceKey, targetBucket, targetKey);
-
-                //ResumbaleSample.ResumableCopyObject(sourceBucket, sourceKey, targetBucket, targetKey);
 
                 //ModifyObjectMetaSample.ModifyObjectMeta(bucketName);
 
@@ -87,17 +79,21 @@ namespace Aliyun.OSS.Samples
                 //MultipartUploadSample.UploadMultipart(bucketName);
                 //MultipartUploadSample.AsyncUploadMultipart(bucketName);
 
+                //const string sourceBucket = bucketName;
+                //const string sourceKey = "key-1";
+                //const string targetBucket = bucketName;
+                //const string targetKey = "GetObjectSample2";
                 //MultipartUploadSample.UploadMultipartCopy(targetBucket, targetKey, sourceBucket, sourceKey);
 
                 //MultipartUploadSample.AsyncUploadMultipartCopy(targetBucket, targetKey, sourceBucket, sourceKey);
 
                 //MultipartUploadSample.ListMultipartUploads(bucketName);
 
-                ////CNameSample.CNameOperation(bucketName);
+                //CNameSample.CNameOperation(bucketName);
 
                 //PostPolicySample.GenPostPolicy(bucketName);
 
-                //DeleteBucketSample.DeleteNoEmptyBucket(bucketName);
+                //DeleteBucketSample.DeleteBucket(bucketName);
 
             }
             catch (OssException ex)
