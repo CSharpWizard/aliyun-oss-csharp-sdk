@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Aliyun.OSS;
-using Aliyun.OSS.Common;
 
 namespace Aliyun.OSS.Test.Util
 {
@@ -84,7 +82,7 @@ namespace Aliyun.OSS.Test.Util
         #region Object related
         public static string GetObjectKey(string prefix)
         {
-            return prefix.ToLower() + "-object-" + DateTime.Now.ToFileTimeUtc();
+            return prefix.ToLower() + DateTime.Now.Ticks.ToString();
         }
 
         public static PutObjectResult UploadObject(IOss ossClient, string bucketName, 
