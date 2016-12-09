@@ -56,7 +56,7 @@ namespace Aliyun.OSS
         /// <param name="accessKeySecret">STS提供的访问密钥。</param>
         /// <param name="securityToken">STS提供的安全令牌。</param>
         public OssClient(string endpoint, string accessKeyId, string accessKeySecret, string securityToken)
-			: this(new Uri(endpoint.ToLower().Trim().StartsWith("http") ? endpoint.Trim() : "http://" + endpoint.Trim()),
+			: this(new Uri(endpoint.ToLower().Trim().StartsWith(HttpUtils.HttpProto) ? endpoint.Trim() : HttpUtils.HttpProto + endpoint.Trim()),
                    accessKeyId, accessKeySecret, securityToken) { }
 
         /// <summary>
@@ -921,6 +921,39 @@ namespace Aliyun.OSS
                 throw;
             }
             return true;
+        }
+
+        /// <inheritdoc/>
+        public void SetObjectAcl(string bucketName, string key, CannedAccessControlList acl)
+        {
+            var setObjectAclRequest = new SetObjectAclRequest(bucketName, key, acl);
+            SetObjectAcl(setObjectAclRequest);
+        }
+
+        /// <inheritdoc/>
+        public void SetObjectAcl(SetObjectAclRequest setObjectAclRequest)
+        {
+            ThrowIfNullRequest(setObjectAclRequest);
+
+            var cmd = SetObjectAclCommand.Create(_serviceClient, 
+                                                 _endpoint,
+                                                 CreateContext(HttpMethod.Put, setObjectAclRequest.BucketName, setObjectAclRequest.Key),
+                                                 setObjectAclRequest);
+            using (cmd.Execute())
+            {
+                // Do nothing
+            }
+        }
+
+        /// <inheritdoc/>
+        public AccessControlList GetObjectAcl(string bucketName, string key)
+        {
+            var cmd = GetObjectAclCommand.Create(_serviceClient, 
+                                                 _endpoint,
+                                                 CreateContext(HttpMethod.Get, bucketName, key),
+                                                 bucketName, 
+                                                 key);
+            return cmd.Execute();
         }
 
         #endregion
