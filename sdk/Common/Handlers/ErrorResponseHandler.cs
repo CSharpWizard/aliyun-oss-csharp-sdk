@@ -14,8 +14,9 @@ using Aliyun.OSS.Common.Communication;
 using Aliyun.OSS.Common.Handlers;
 using Aliyun.OSS.Model;
 using Aliyun.OSS.Transform;
+using Aliyun.OSS.Util;
 
-namespace Aliyun.OSS.Util
+namespace Aliyun.OSS.Common.Handlers
 {
     internal class ErrorResponseHandler : ResponseHandler
     {
@@ -26,10 +27,15 @@ namespace Aliyun.OSS.Util
             if (response.IsSuccessful())
                 return;
 
+            ErrorHandle(response);
+        }
+
+        protected void ErrorHandle(ServiceResponse response)
+        {
             // Treats NotModified(Http status code) specially.
             if (response.StatusCode == HttpStatusCode.NotModified)
             {
-                throw ExceptionFactory.CreateException(HttpStatusCode.NotModified.ToString(), 
+                throw ExceptionFactory.CreateException(HttpStatusCode.NotModified.ToString(),
                     response.Failure.Message, null, null);
             }
 
