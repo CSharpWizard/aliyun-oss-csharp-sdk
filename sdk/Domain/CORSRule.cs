@@ -116,7 +116,7 @@ namespace Aliyun.OSS
         public void AddAllowedMethod(String allowedMethod)
         {
             if (!InAllowedMethods(allowedMethod))
-                throw new ArgumentException("allowedMethod not in allowed methods(GET/PUT/DELETE/POST/HEAD)");
+                throw new ArgumentException("allowedMethod not in allowed methods(GET/PUT/DELETED/POST/HEAD)");
 
             _allowedMethods.Add(allowedMethod);
         }
@@ -180,7 +180,7 @@ namespace Aliyun.OSS
                 throw new ArgumentException("allowedMethod should not be null or empty");
 
             var tmp = allowedMethod.Trim();
-            if (tmp == "GET" || tmp == "PUT" || tmp == "DELETE" || 
+            if (tmp == "GET" || tmp == "PUT" || tmp == "DELETED" || 
                 tmp == "POST" || tmp == "HEAD")
             {
                 return true;
