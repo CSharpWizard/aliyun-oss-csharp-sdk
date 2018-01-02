@@ -18,11 +18,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         private static string _objectKey;
         private static string _objectETag;
 
-#if NETCOREAPP2_0
-        [OneTimeSetUp]
-#else
         [TestFixtureSetUp]
-#endif
         public static void ClassInitialize()
         {
             //get a OSS client object
@@ -40,11 +36,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             _objectETag = poResult.ETag;
         }
 
-#if NETCOREAPP2_0
-        [OneTimeTearDown]
-#else
         [TestFixtureTearDown]
-#endif
         public static void ClassCleanup()
         {
             OssTestUtils.CleanBucket(_ossClient, _bucketName);
@@ -373,6 +365,53 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             {
                 if (req != null) req.Abort();
                 if (res != null) res.Close();
+            }
+        }
+
+        [Test]
+        public void PutObjectWithPreSignedUriAndCrc()
+        {
+            var testStr = FileUtils.GenerateOneKb();
+            var bytes = Encoding.ASCII.GetBytes(testStr);
+         
+            var now = DateTime.Now;
+            //set expiration time to 5 seconds later
+            var expireDate = now.AddSeconds(5);
+            var targetObject = OssTestUtils.GetObjectKey(_className);
+            var uri = _ossClient.GeneratePresignedUri(_bucketName, targetObject, expireDate, SignHttpMethod.Put);
+            try
+            {
+                var putResult = _ossClient.PutObject(uri, new MemoryStream(bytes));
+                Assert.AreEqual(putResult.HttpStatusCode, HttpStatusCode.OK);
+            }
+            catch (WebException ex)
+            {
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [Test]
+        public void PutObjectWithPreSignedUriWithoutCrc()
+        {
+            var testStr = FileUtils.GenerateOneKb();
+            var bytes = Encoding.ASCII.GetBytes(testStr);
+
+            var now = DateTime.Now;
+            //set expiration time to 5 seconds later
+            var expireDate = now.AddSeconds(5);
+            var targetObject = OssTestUtils.GetObjectKey(_className);
+            var uri = _ossClient.GeneratePresignedUri(_bucketName, targetObject, expireDate, SignHttpMethod.Put);
+            try
+            {
+                Common.ClientConfiguration config = new Common.ClientConfiguration();
+                config.EnableCrcCheck = false;
+                IOss ossClient = OssClientFactory.CreateOssClient(config);
+                var putResult = ossClient.PutObject(uri, new MemoryStream(bytes));
+                Assert.AreEqual(putResult.HttpStatusCode, HttpStatusCode.OK);
+            }
+            catch (WebException ex)
+            {
+                Assert.Fail(ex.ToString());
             }
         }
 

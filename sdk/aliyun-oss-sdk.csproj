@@ -13,6 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Ethan\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <SignAssembly>false</SignAssembly>
+    <DelaySign>False</DelaySign>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -41,7 +42,6 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectAssetsFile>notexistfile</ProjectAssetsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -382,6 +382,10 @@
     <Compile Include="Domain\DownloadObjectRequest.cs" />
     <Compile Include="Common\Internal\StreamTransferTracker.cs" />
     <Compile Include="Domain\UploadObjectRequest.cs" />
+    <Compile Include="Util\Crc64.cs" />
+    <Compile Include="Common\Internal\Crc64HashAlgorithm.cs" />
+    <Compile Include="Common\Handlers\Crc64CheckHandler.cs" />
+    <Compile Include="Common\Handlers\CompleteMultipartUploadCrc64Handler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="aliyun_sdk_net.snk" />

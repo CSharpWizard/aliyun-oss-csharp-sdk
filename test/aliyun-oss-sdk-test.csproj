@@ -12,7 +12,6 @@
     <TargetFrameworkProfile />
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectAssetsFile>notexistfile</ProjectAssetsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,6 +74,8 @@
     <Compile Include="Util\NonSeekableStream.cs" />
     <Compile Include="TestCase\BucketTestCase\BucketLifecycleSettingsTest.cs" />
     <Compile Include="TestCase\ObjectTestCase\ObjectResumableOperationTest.cs" />
+    <Compile Include="TestCase\ObjectTestCase\OssCrcTest.cs" />
+    <Compile Include="TestCase\OtherTestCase\ResumableContextTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
