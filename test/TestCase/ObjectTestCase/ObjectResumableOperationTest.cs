@@ -23,7 +23,11 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         private static string _objectKey;     
         private static ClientConfiguration _config;
 
+#if NETCOREAPP2_0
+        [OneTimeSetUp]
+#else
         [TestFixtureSetUp]
+#endif
         public static void ClassInitialize()
         {
             _config = new ClientConfiguration();
@@ -42,7 +46,11 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
                 Config.UploadTestFile, new ObjectMetadata());
         }
 
+#if NETCOREAPP2_0
+        [OneTimeTearDown]
+#else
         [TestFixtureTearDown]
+#endif
         public static void ClassCleanup()
         {
             OssTestUtils.CleanBucket(_ossClient, _bucketName);
@@ -661,7 +669,6 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             try
             {
                 DownloadObjectRequest request = new DownloadObjectRequest(_bucketName, key, targetFile);
-                request.CheckpointDir = Config.DownloadFolder;
                 request.ParallelThreadCount = 1;
                 var metadata = client.ResumableDownloadObject(request);
                 var expectedETag = metadata.ETag;
