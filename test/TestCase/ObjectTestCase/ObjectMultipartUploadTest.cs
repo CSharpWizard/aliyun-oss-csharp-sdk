@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Aliyun.OSS;
-using Aliyun.OSS.Common;
 using Aliyun.OSS.Test.Util;
 
 using NUnit.Framework;
@@ -19,7 +18,11 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         private static string _sourceObjectKey;
         private static string _objectETag;
 
+#if NETCOREAPP2_0
+        [OneTimeSetUp]
+#else
         [TestFixtureSetUp]
+#endif
         public static void ClassInitialize()
         {
             //get a OSS client object
@@ -38,7 +41,11 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             _objectETag = poResult.ETag;
         }
 
+#if NETCOREAPP2_0
+        [OneTimeTearDown]
+#else
         [TestFixtureTearDown]
+#endif
         public static void ClassCleanup()
         {
             OssTestUtils.CleanBucket(_ossClient, _bucketName);
@@ -47,112 +54,12 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
         [Test]
         public void MultipartUploadComplexStepTest()
         {
-            MultipartUploadComplexStepTest(_ossClient);
-        }
-
-        [Test]
-        public void MultipartUploadComplexStepTestWithWrongCrc()
-        {
-            try
-            {
-                MultipartUploadComplexStepTest(_ossClient, true);
-                Assert.Fail();
-            }
-            catch(ClientException e)
-            {
-                Assert.IsTrue(e.Message.Contains("Crc64"));
-            }
-        }
-
-        [Test]
-        public void MultipartUploadComplexStepTestWithoutCrc()
-        {
-            Common.ClientConfiguration config = new Common.ClientConfiguration();
-            config.EnableCrcCheck = false;
-            IOss ossClient = OssClientFactory.CreateOssClient(config);
-            MultipartUploadComplexStepTest(ossClient);
-        }
-
-        [Test]
-        public void CompleteMultipartUploadWithListParts()
-        {
             var sourceFile = Config.MultiUploadTestFile;
             //get target object name
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
 
             var initRequest = new InitiateMultipartUploadRequest(_bucketName, targetObjectKey);
             var initResult = _ossClient.InitiateMultipartUpload(initRequest);
-
-            // Set the part size 
-            const int partSize = 1024 * 1024 * 1;
-
-            var partFile = new FileInfo(sourceFile);
-            // Calculate the part count
-            var partCount = OssTestUtils.CalculatePartCount(partFile.Length, partSize);
-
-            LogUtility.LogMessage("File {0} is splitted to {1} parts for multipart upload",
-                sourceFile, partCount);
-
-            //upload the file
-            using (var fs = new FileStream(partFile.FullName, FileMode.Open))
-            {
-                for (var i = 0; i < partCount; i++)
-                {
-                    // Skip to the start position
-                    long skipBytes = partSize * i;
-                    fs.Position = skipBytes;
-
-                    // calculate the part size
-                    var size = partSize < partFile.Length - skipBytes
-                        ? partSize
-                        : partFile.Length - skipBytes;
-
-                    // Create a UploadPartRequest, uploading parts
-                    var uploadPartRequest = new UploadPartRequest(_bucketName, targetObjectKey, initResult.UploadId)
-                    {
-                        InputStream = fs,
-                        PartSize = size,
-                        PartNumber = (i + 1)
-                    };
-                    _ossClient.UploadPart(uploadPartRequest);
-                }
-            }
-
-            var lmuRequest = new ListMultipartUploadsRequest(_bucketName);
-            var lmuListing = _ossClient.ListMultipartUploads(lmuRequest);
-            string mpUpload = null;
-            foreach (var t in lmuListing.MultipartUploads)
-            {
-                if (t.UploadId == initResult.UploadId)
-                    mpUpload = t.UploadId;
-            }
-
-            Assert.IsNotNull(mpUpload, "The multipart uploading should be in progress");
-
-            PartListing partList = _ossClient.ListParts(new ListPartsRequest(_bucketName, targetObjectKey, mpUpload));
-
-            var completeRequest = new CompleteMultipartUploadRequest(_bucketName, targetObjectKey, initResult.UploadId);
-            foreach (var part in partList.Parts)
-            {
-                completeRequest.PartETags.Add(part.PartETag);
-
-            }
-            _ossClient.CompleteMultipartUpload(completeRequest);
-
-            Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
-
-            //delete the object
-            _ossClient.DeleteObject(_bucketName, targetObjectKey);
-        }
-
-        private void MultipartUploadComplexStepTest(IOss ossClient, bool overrideCrc = false)
-        {
-            var sourceFile = Config.MultiUploadTestFile;
-            //get target object name
-            var targetObjectKey = OssTestUtils.GetObjectKey(_className);
-
-            var initRequest = new InitiateMultipartUploadRequest(_bucketName, targetObjectKey);
-            var initResult = ossClient.InitiateMultipartUpload(initRequest);
 
             // Set the part size 
             const int partSize = 1024 * 1024 * 1;
@@ -172,7 +79,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
                 for (var i = 0; i < partCount; i++)
                 {
                     // Skip to the start position
-                    long skipBytes = partSize * i;
+                    long skipBytes = partSize*i;
                     fs.Position = skipBytes;
 
                     // calculate the part size
@@ -187,18 +94,15 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
                         PartSize = size,
                         PartNumber = (i + 1)
                     };
-                    var uploadPartResult = ossClient.UploadPart(uploadPartRequest);
+                    var uploadPartResult = _ossClient.UploadPart(uploadPartRequest);
 
                     // Save the result
                     partETags.Add(uploadPartResult.PartETag);
-
-                    Assert.AreNotEqual(uploadPartResult.Crc64, 0);
-                    Assert.AreNotEqual(uploadPartResult.Length, 0);
                 }
             }
 
             var lmuRequest = new ListMultipartUploadsRequest(_bucketName);
-            var lmuListing = ossClient.ListMultipartUploads(lmuRequest);
+            var lmuListing = _ossClient.ListMultipartUploads(lmuRequest);
             string mpUpload = null;
             foreach (var t in lmuListing.MultipartUploads)
             {
@@ -211,20 +115,14 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             var completeRequest = new CompleteMultipartUploadRequest(_bucketName, targetObjectKey, initResult.UploadId);
             foreach (var partETag in partETags)
             {
-                if (overrideCrc)
-                {
-                    partETag.Crc64 = "0";
-                }
-
                 completeRequest.PartETags.Add(partETag);
-
             }
-            ossClient.CompleteMultipartUpload(completeRequest);
-
+            _ossClient.CompleteMultipartUpload(completeRequest);
+            
             Assert.IsTrue(OssTestUtils.ObjectExists(_ossClient, _bucketName, targetObjectKey));
 
             //delete the object
-            ossClient.DeleteObject(_bucketName, targetObjectKey);
+            _ossClient.DeleteObject(_bucketName, targetObjectKey);
         }
 
         [Test]
@@ -294,7 +192,7 @@ namespace Aliyun.OSS.Test.TestClass.ObjectTestClass
             var targetObjectKey = OssTestUtils.GetObjectKey(_className);
 
             var initRequest = new InitiateMultipartUploadRequest(_bucketName, targetObjectKey);
-            var initResult = _ossClient.InitiateMultipartUpload(initRequest);   
+            var initResult = _ossClient.InitiateMultipartUpload(initRequest);
 
             // Set the part size 
             const int partSize = 1024 * 512 * 1;
